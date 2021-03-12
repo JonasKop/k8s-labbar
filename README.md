@@ -326,7 +326,7 @@ kubectl apply -f deployment.yaml
 ```
 8. Skapa en `index.html` fil på rätt plats i din container. 
 ```bash
-kubectl exec $POD_NAME -- sh -c 'mkdir -p /var/www/html && echo "<h1>Halojsan</h1>" > /var/www/html/index.html'
+kubectl exec $POD_NAME -- sh -c "mkdir -p /var/www/html && echo '<h1>Halojsan</h1>' > /var/www/html/index.html"
 ```
 9. Ta bort din pod
 ```bash
