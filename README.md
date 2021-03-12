@@ -1,7 +1,6 @@
 # Kubernetes labbar
 
 
-
 ## Allmänt sköna debuggingkommandon
 I Kubernetes finns det otroligt många kommandon men alla bygger på någorlunda samma struktur. Om någonting strular brukar man oftast få en förklaring till varför med hjälp av dessa. 
 - Hämta alla poddar
@@ -34,7 +33,7 @@ kubectl logs $POD_NAME -f
 ```
 - Ta bort en resurs
 ```bash
-kubectl delete $RESOURCE $NAME
+kubectl delete pod $RESOURCE $NAME
 
 # example
 kubectl delete deployment nginx
@@ -88,10 +87,11 @@ echo "[[ $commands[kubectl] ]] && source <(kubectl completion zsh)" >> ~/.zshrc
 ```bash
 kubectl get pods -A
 ```
-6. Spana in din dashboard
+6. Spana in din dashboard och vänta så att allting har startat upp korrekt. 
 ```bash
 minikube dashboard
 ```
+
 
 
 
@@ -132,12 +132,12 @@ spec:
 kubectl apply -f deployment.yaml
 ```
 3. Se så att din pod körs. Vänta på att de ska ha status `Running`.
-```
+```bash
 kubectl get pods
 ```
 4. Port forward en port, 8080, på din dator till port 80 på podden.
 ```bash
-kc port-forward $POD_NAME 8080:80
+kubectl port-forward $POD_NAME 8080:80
 ```
 5. Gå in på [http://localhost:8080](http://localhost:8080).
 
@@ -225,7 +225,7 @@ kubectl exec $POD_NAME -- sh -c 'mkdir -p /var/www/html && echo "<h1>Halojsan</h
 ```
 6. Port forward en port, 8080, på din dator till port 80 på podden.
 ```bash
-kc port-forward $POD_NAME 8080:80
+kubectl port-forward $POD_NAME 8080:80
 ```
 7. Gå in på [http://localhost:8080](http://localhost:8080)
 
@@ -326,16 +326,16 @@ kubectl exec $POD_NAME -- sh -c 'mkdir -p /var/www/html && echo "<h1>Halojsan</h
 ```
 7. Ta bort din pod
 ```bash
-kubectl delete $POD_NAME
+kubectl delete pod $POD_NAME
 ```
 8. Port forward en port, 8080, på din dator till port 80 på den nya podden.
 ```bash
-kc port-forward $POD_NAME 8080:80
+kubectl port-forward $POD_NAME 8080:80
 ```
 9. Gå in på [http://localhost:8080](http://localhost:8080)
 
 ## 5. Sätt upp en ingress
-Vi vill nu ta och öppna upp vår pod till omvärlden, så att man kan besöka den via en domän och få olika svar beroende på vad vår URL är. 
+Vi vill nu ta och öppna upp vår hemsida till omvärlden, så att man kan besöka den via en domän och få olika svar beroende på vad vår URL är. 
 1. Installera ingress nginx i vårt kluster. 
 ```bash
 minikube addons enable ingress
@@ -367,8 +367,6 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: nginx-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   rules:
     - host: nginx-grejer.info
@@ -426,12 +424,13 @@ spec:
       containers:
       - name: test-server
         image: jonaskop/test-server
-        # Öppna upp port 80
+        # Sätt lite environment variabler
         env:
         - name: PORT
           value: "80"
         - name: TEXT
           value: "Hejsan, här har vi lite text"
+        # Öppna upp port 80
         ports:
         - containerPort: 80
         # Fäst din config på en specifik path i containern
@@ -463,8 +462,6 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: nginx-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   rules:
     - host: nginx-grejer.info
@@ -488,4 +485,25 @@ spec:
 14. Tillämpa din konfiguration
 ```bash
 kubectl apply -f service-2.yaml
+```
+15. Gå in på [http://nginx-grejer.info](http://nginx-grejer.info)
+
+## 6. Avsluta allting
+1. Stäng av ditt kluster
+```bash
+minikube stop
+```
+2. Ta bort ditt kluster
+```bash
+minikube delete
+```
+3. Rensa din `/etc/hosts`
+```bash
+# Öppna filen med en text-editor
+sudo nano /etc/hosts
+
+# Ta bort följande längst ner
+$YOUR_MINIKUBE_IP nginx-grejer.info
+
+# Spara filen med CTRL+O sedan ENTER sedan CTRL+X
 ```
