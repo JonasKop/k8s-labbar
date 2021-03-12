@@ -264,7 +264,11 @@ spec:
     requests:
       storage: 100Mi
 ```
-4. Redigera din `deployment.yaml` och lägg till din volym. 
+5. Tillämpa din konfiguration
+```bash
+kubectl apply -f pvc.yaml
+```
+6. Redigera din `deployment.yaml` och lägg till din volym. 
 ```yaml
 # Vilken API version av kubernetes som du vill använda
 apiVersion: apps/v1
@@ -316,23 +320,23 @@ spec:
         configMap:
           name: nginx-conf
 ```
-5. Tillämpa din konfiguration
+7. Tillämpa din konfiguration
 ```bash
 kubectl apply -f deployment.yaml
 ```
-6. Skapa en `index.html` fil på rätt plats i din container. 
+8. Skapa en `index.html` fil på rätt plats i din container. 
 ```bash
 kubectl exec $POD_NAME -- sh -c 'mkdir -p /var/www/html && echo "<h1>Halojsan</h1>" > /var/www/html/index.html'
 ```
-7. Ta bort din pod
+9. Ta bort din pod
 ```bash
 kubectl delete pod $POD_NAME
 ```
-8. Port forward en port, 8080, på din dator till port 80 på den nya podden.
+10. Port forward en port, 8080, på din dator till port 80 på den nya podden.
 ```bash
 kubectl port-forward $POD_NAME 8080:80
 ```
-9. Gå in på [http://localhost:8080](http://localhost:8080)
+11. Gå in på [http://localhost:8080](http://localhost:8080)
 
 ## 5. Sätt upp en ingress
 Vi vill nu ta och öppna upp vår hemsida till omvärlden, så att man kan besöka den via en domän och få olika svar beroende på vad vår URL är. 
