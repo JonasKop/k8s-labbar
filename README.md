@@ -135,7 +135,7 @@ kubectl apply -f deployment.yaml
 ```bash
 kubectl get pods
 ```
-4. Port forward en port, 8080, på din dator till port 80 på podden.
+4. Port forward en port, 8080, på din dator till port 80 på podden. Byt ut `$POD_NAME` mot poddens namn.
 ```bash
 kubectl port-forward $POD_NAME 8080:80
 ```
@@ -336,7 +336,7 @@ kubectl delete pod $POD_NAME
 ```bash
 kubectl port-forward $POD_NAME 8080:80
 ```
-11. Gå in på [http://localhost:8080](http://localhost:8080)
+11. Gå in på [http://localhost:8080](http://localhost:8080), din fil har nu sparats vid omstart.
 
 ## 5. Sätt upp en ingress
 Vi vill nu ta och öppna upp vår hemsida till omvärlden, så att man kan besöka den via en domän och få olika svar beroende på vad vår URL är. 
@@ -346,7 +346,7 @@ minikube addons enable ingress
 ```
 2. Verifiera att den körs (allting ska ha statusen `Running` eller `Completed`)
 ```bash
-kubectl get pods -n kube-system
+kubectl get pods -n ingress-nginx
 ```
 3. Skapa en service som lastbalanserar våra requests till vår pod i filen `service.yaml`. 
 ```yaml
@@ -460,7 +460,7 @@ spec:
 ```bash
 kubectl apply -f service-2.yaml
 ```
-13. Redigera din `ingress.yaml`
+13. Redigera din `ingress.yaml` för att omdirigera allting med `/v2` prefixen till vår nya pod.
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -488,9 +488,10 @@ spec:
 ```
 14. Tillämpa din konfiguration
 ```bash
-kubectl apply -f service-2.yaml
+kubectl apply -f ingress.yaml
 ```
 15. Gå in på [http://nginx-grejer.info](http://nginx-grejer.info)
+16. Gå in på [http://nginx-grejer.info/v2/banan](http://nginx-grejer.info/v2/banan)
 
 ## 6. Avsluta allting
 1. Stäng av ditt kluster
